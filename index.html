@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sintaxis Challenge</title>
+<style>
+:root{--bg:#101528;--panel:#1b2440;--panel2:#222e50;--text:#f5f7ff;--muted:#b8c2df;--accent:#8b7cff;--good:#31c48d;--bad:#ff6b7a}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text);background:radial-gradient(circle at top,#29345d,var(--bg) 55%);display:grid;place-items:center;padding:20px}
+main{width:min(720px,100%)}.top{text-align:center;margin-bottom:20px}.tag{display:inline-block;background:#34305f;color:#d9d4ff;padding:7px 12px;border-radius:99px;font-size:.8rem;font-weight:700;letter-spacing:.06em}.top h1{font-size:clamp(2rem,6vw,3.2rem);margin:12px 0 6px}.top p{color:var(--muted);margin:0}
+.card{background:rgba(27,36,64,.96);border:1px solid #3b476d;border-radius:24px;padding:clamp(20px,5vw,34px);box-shadow:0 22px 70px #0005}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px}.pill{background:var(--panel2);padding:8px 12px;border-radius:12px;font-weight:700}.progress{height:9px;background:#10182d;border-radius:99px;overflow:hidden;margin:18px 0 26px}.bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#44d6c1);transition:width .3s}
+h2{font-size:1.35rem;line-height:1.35;margin:0 0 20px}.answers{display:grid;gap:12px}.answer{border:1px solid #485578;background:#222e50;color:var(--text);padding:15px 17px;border-radius:14px;text-align:left;font-size:1rem;cursor:pointer;transition:.15s}.answer:hover:not(:disabled){transform:translateY(-2px);border-color:var(--accent);background:#2c3961}.answer:disabled{cursor:default;opacity:1}.answer.correct{border-color:var(--good);background:#164c43}.answer.wrong{border-color:var(--bad);background:#552c43}.feedback{margin-top:17px;padding:15px;border-radius:14px;background:#121b31;color:var(--muted);line-height:1.5}.feedback strong{color:var(--text)}.btn{border:0;background:linear-gradient(100deg,var(--accent),#6c9cff);color:white;font-weight:800;font-size:1rem;padding:13px 20px;border-radius:13px;cursor:pointer;margin-top:18px}.btn:hover{filter:brightness(1.1)}.btn:focus,.answer:focus{outline:3px solid #fff7;outline-offset:2px}.hidden{display:none}.result{text-align:center}.result .big{font-size:3.5rem;margin:8px}.small{color:var(--muted);font-size:.9rem}.footer{text-align:center;color:#8995b7;font-size:.8rem;margin-top:16px}
+@media(max-width:480px){.row{align-items:flex-start}.pill{font-size:.85rem}}
+</style>
+</head>
+<body>
+<main>
+ <header class="top"><span class="tag">🎮 JUEGO INTERACTIVO</span><h1>Sintaxis Challenge</h1><p>¡Pon a prueba tus conocimientos sobre diagramas de sintaxis!</p></header>
+ <section class="card" id="game">
+  <div class="row"><span class="pill" id="level">Nivel 1 · Principiante</span><span class="pill">⭐ <span id="score">0</span> puntos</span></div>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <div class="row small" style="margin-bottom:12px"><span id="counter">Pregunta 1 de 10</span><span id="percent">0%</span></div>
+  <h2 id="question"></h2>
+  <div class="answers" id="answers"></div>
+  <div id="feedback" class="feedback hidden" aria-live="polite"></div>
+  <button class="btn hidden" id="next">Siguiente pregunta →</button>
+ </section>
+ <section class="card result hidden" id="result">
+  <div class="tag">🏆 RETO COMPLETADO</div><div class="big">🎉</div><h2 id="resultTitle">¡Buen trabajo!</h2><p id="resultText"></p>
+  <p class="small">Comparte el juego con tus amigos y descubre quién consigue más puntos.</p>
+  <button class="btn" id="again">Volver a jugar</button>
+  <button class="btn" id="share" style="background:#26385d">Compartir juego ↗</button>
+ </section>
+ <div class="footer">Hecho para aprender jugando · Sintaxis Challenge</div>
+</main>
+<script>
+const questions=[
+ {q:"¿Qué representa un diagrama de sintaxis?",a:["La estructura y las reglas para escribir una instrucción","El aspecto visual de una computadora","Una lista de resultados"],c:0,e:"Muestra cómo se construye correctamente una instrucción o comando."},
+ {q:"¿Qué indican normalmente los corchetes [ ]?",a:["Un elemento obligatorio","Un elemento opcional","El final de una instrucción"],c:1,e:"Lo que aparece entre corchetes puede incluirse, pero no es obligatorio."},
+ {q:"¿Qué suelen indicar las llaves { }?",a:["Una elección entre varias alternativas","Un comentario","Que debes borrar el texto"],c:0,e:"En muchos diagramas, las llaves agrupan opciones entre las que debes elegir."},
+ {q:"¿Qué significa la barra vertical | ?",a:["Sumar dos instrucciones","Elegir entre una opción u otra","Repetir todo varias veces"],c:1,e:"La barra vertical separa alternativas: normalmente eliges una de ellas."},
+ {q:"Si una palabra clave aparece escrita literalmente, ¿qué debes hacer?",a:["Escribirla tal como aparece","Cambiarla por un sinónimo","Omitirla siempre"],c:0,e:"Las palabras clave deben escribirse exactamente como indica la sintaxis."},
+ {q:"¿Qué significa que un elemento sea obligatorio?",a:["Puedes ignorarlo","Debe aparecer para que la instrucción sea válida","Solo se usa en comentarios"],c:1,e:"Un elemento obligatorio forma parte de la estructura necesaria del comando."},
+ {q:"En SQL, ¿para qué sirve CREATE TABLE?",a:["Crear una tabla","Consultar datos","Eliminar una columna"],c:0,e:"CREATE TABLE permite definir y crear una tabla en una base de datos."},
+ {q:"En una sintaxis, ¿qué representa un nombre como nombre_tabla?",a:["Siempre una palabra reservada","Un valor que se sustituye por el nombre real","Un símbolo de puntuación"],c:1,e:"Los nombres de ejemplo representan datos que debes reemplazar por los tuyos."},
+ {q:"Si el diagrama muestra A | B, ¿qué combinación representa?",a:["A y B al mismo tiempo obligatoriamente","A o B","Ni A ni B"],c:1,e:"La barra vertical expresa alternativas: se selecciona una opción."},
+ {q:"¿Por qué es útil leer un diagrama de sintaxis antes de escribir un comando?",a:["Para conocer el orden y los elementos permitidos","Para que el programa tenga más colores","Para evitar aprender palabras clave"],c:0,e:"Te ayuda a identificar qué es obligatorio, qué es opcional y en qué orden va."}
+];
+let index=0,score=0,locked=false;
+const $=id=>document.getElementById(id);
+function render(){
+ locked=false;const q=questions[index];
+ $("question").textContent=q.q;$("counter").textContent=`Pregunta ${index+1} de ${questions.length}`;
+ $("percent").textContent=`${Math.round(index/questions.length*100)}%`;
+ $("bar").style.width=`${index/questions.length*100}%`;$("score").textContent=score;
+ $("level").textContent=index<4?"Nivel 1 · Principiante":index<7?"Nivel 2 · Intermedio":"Nivel 3 · Experto";
+ $("feedback").classList.add("hidden");$("next").classList.add("hidden");$("answers").innerHTML="";
+ q.a.forEach((answer,i)=>{const b=document.createElement("button");b.className="answer";b.textContent=String.fromCharCode(65+i)+". "+answer;b.onclick=()=>choose(i);$("answers").appendChild(b)});
+}
+function choose(choice){
+ if(locked)return;locked=true;const q=questions[index];const buttons=[...$("answers").children];
+ buttons.forEach((b,i)=>{b.disabled=true;if(i===q.c)b.classList.add("correct");if(i===choice&&choice!==q.c)b.classList.add("wrong")});
+ if(choice===q.c){score+=10;$("score").textContent=score}
+ $("feedback").innerHTML=`<strong>${choice===q.c?"¡Correcto! +10 puntos 🎉":"¡Casi! Sigue intentando 💪"}</strong><br>${q.e}`;
+ $("feedback").classList.remove("hidden");$("next").classList.remove("hidden");
+ $("next").textContent=index===questions.length-1?"Ver mis resultados 🏆":"Siguiente pregunta →";
+}
+function finish(){
+ $("game").classList.add("hidden");$("result").classList.remove("hidden");$("bar").style.width="100%";
+ $("resultTitle").textContent=score>=80?"¡Eres un experto en sintaxis!":score>=50?"¡Muy buen trabajo!":"¡Buen intento, sigue practicando!";
+ $("resultText").textContent=`Obtuviste ${score} de 100 puntos (${score/10} respuestas correctas).`;
+}
+$("next").onclick=()=>{if(index<questions.length-1){index++;render()}else finish()};
+$("again").onclick=()=>{index=0;score=0;$("result").classList.add("hidden");$("game").classList.remove("hidden");render()};
+$("share").onclick=async()=>{const data={title:"Sintaxis Challenge",text:"¡Juega Sintaxis Challenge y comprueba cuánto sabes sobre diagramas de sintaxis!",url:location.href};try{if(navigator.share)await navigator.share(data);else{await navigator.clipboard.writeText(location.href);$("share").textContent="¡Enlace copiado!"}}catch(e){}};
+render();
+</script>
+</body>
+</html>
